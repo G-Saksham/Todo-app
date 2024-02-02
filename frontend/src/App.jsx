@@ -1,35 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
 import './App.css'
 import {CreateTodo} from './components/CreateTodo'
-import {Todos} from './components/Todos'
+import {Todo} from './components/Todo'
 import axios from 'axios'
-
-
-// issues || tasks
-// render network for backend
-// vercel for frontend
-
-
 
 function App() {
   const [todos, setTodos] = useState([]);
 
-  fetch("http://localhost:3000/todos",{
-    method: "GET"
-  })
-    .then(async (res) => {
-      const json = await res.json();
-      setTodos(json.todos)
-    })
+  useEffect(()=>{
+    try{
+      setInterval(()=> {
+        const temp = async function () {
+          const response = await axios.get("http://localhost:3000/todos");
+          setTodos(response.data.todos)
+        }
+        temp();
+      },8000)
+    }
+    catch (error) {
+      // console.error("Error Occured: ", error);
+    }
+    
+  },[]);
 
-  return (
-    <div>
-      <CreateTodo></CreateTodo>
-      <Todos todos={todos}></Todos>
-    </div>
-  )
+  return <>
+    <CreateTodo/>
+    {todos.map((todo)=> {
+      return <Todo key ={todo._id} todo={todo}></Todo>
+    })}
+  </>
 }
 
 export default App
